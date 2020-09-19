@@ -2,6 +2,11 @@ GET http://localhost:3000/
 
 ###
 
+GET http://localhost:3000/dash
+Authorization: eyJhbGciOiJIUzI1NiJ9.am9l.YuigTd6kMTvmoaZyZ0_ItpmlwwEJk9HOtOf5k_-VDPQ
+
+###
+
 POST http://localhost:3000/register
 Content-Type: application/json
 
@@ -18,7 +23,7 @@ POST http://localhost:3000/login
 Content-Type: application/json
 
 {
-    "username": "adxl",
+    "username": "joe",
     "password": "password"
 }
 

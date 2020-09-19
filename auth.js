@@ -5,6 +5,7 @@ const router = express.Router()
 
 const client = require('./db.js');
 const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken')
 
 
 router.use(express.json())
@@ -16,8 +17,11 @@ router.post('/login', async (req, res) => {
     client.query(query, async (err, result) => {
         if (result.rows.length > 0) {
             try {
-                if (await bcrypt.compare(password, result.rows[0].password))
-                    res.status(200).send('ok')
+                if (await bcrypt.compare(password, result.rows[0].password)) {
+                    const user = { username: username }
+                    const token = jwt.sign(username, process.env.TOKEN)
+                    res.status(200).json({ token: token })
+                }
                 else
                     res.send("bad credentials")
             } catch (err) {
@@ -29,5 +33,19 @@ router.post('/login', async (req, res) => {
     })
 })
 
+const authenticateToken = function (req, res, next) {
+    const token = req.headers['authorization']
 
-module.exports = router
+    if (token == null) res.status(401).send("no token sent")
+
+    jwt.verify(token, process.env.TOKEN, (err, username) => {
+        if (err) res.status(403).send('FORBIDDEN')
+        req.username = username
+        next()
+    })
+}
+
+module.exports = {
+    router: router,
+    authToken: authenticateToken
+}
