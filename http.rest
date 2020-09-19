@@ -2,9 +2,12 @@ GET http://localhost:3000/
 
 ###
 
-POST http://localhost:3000/
+POST http://localhost:3000/register
 Content-Type: application/json
 
 {
-    "name": "Adel"
+    "username": "adxl2",
+    "firstName": "Adel",
+    "lastName": "Senhadji",
+    "password": "password"
 }

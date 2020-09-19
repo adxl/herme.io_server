@@ -46,15 +46,22 @@ app.get('/', (req, res) => {
     })
 })
 
-app.post('/', (req, res) => {
-    const name = req.body.name
-    console.log(name);
-    const query = `INSERT INTO usrs(name) VALUES('${name}')`
+app.post('/register', (req, res) => {
+    const user =
+    {
+        username: req.body.username,
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
+        password: req.body.password
+    }
+    console.log(user);
+    const query = `INSERT INTO usrs(username,first_name,last_name,password) VALUES('${user.username}','${user.firstName}','${user.lastName}','${user.password}')`
     client.query(query, (err, results) => {
         if (err) throw err;
         res.status(201).send("Created")
     })
 })
+
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(port))
