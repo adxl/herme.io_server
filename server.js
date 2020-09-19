@@ -12,21 +12,21 @@ app.use(auth.router)
 app.use(express.json())
 // app.use(require('./auth'))
 
-app.get('/', (req, res) => {
-    const query = "SELECT * FROM usrs"
-    client.query(query, (err, result) => {
-        if (err) throw err;
-        console.log('fetch');
-        res.status(200).json(result.rows)
-    })
-})
+// app.get('/', (req, res) => {
+//     const query = "SELECT * FROM usrs"
+//     client.query(query, (err, result) => {
+//         if (err) throw err;
+//         console.log('fetch');
+//         res.status(200).json(result.rows)
+//     })
+// })
 
 app.get('/dash', auth.authToken, (req, res) => {
     // console.log(req.username);
     const query = `SELECT first_name FROM usrs WHERE username='${req.username}'`
     client.query(query, (err, result) => {
         if (err) throw err;
-        res.status(200).send('Hello ' + req.username)
+        res.status(200).json(result.rows[0])
     })
 })
 
@@ -42,7 +42,7 @@ app.post('/register', async (req, res) => {
     const query = `INSERT INTO usrs(username,first_name,last_name,password) VALUES('${user.username}','${user.firstName}','${user.lastName}','${user.password}')`
     client.query(query, (err, results) => {
         if (err) throw err;
-        res.status(201).send("Created")
+        res.status(201).send()
     })
 })
 
