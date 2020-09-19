@@ -49,25 +49,7 @@ app.post('/register', async (req, res) => {
     })
 })
 
-app.post('/login', async (req, res) => {
-    const username = req.body.username;
-    const password = req.body.password;
-    const query = `SELECT * FROM usrs WHERE username='${username}'`
-    client.query(query, async (err, result) => {
-        if (result.rows.length > 0) {
-            try {
-                if (await bcrypt.compare(password, result.rows[0].password))
-                    res.status(200).send('ok')
-                else
-                    res.send("bad credentials")
-            } catch (err) {
-                console.log(err);
-                res.status(500).send()
-            }
-        }
-        res.status(404).send()
-    })
-})
+
 
 
 app.delete('/genocide', (req, res) => {
