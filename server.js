@@ -3,10 +3,11 @@ require('dotenv').config()
 const express = require('express')
 const app = express()
 
+const client = require('./db.js');
+const bcrypt = require('bcrypt')
+
 app.use(express.json())
 app.use(require('./auth'))
-
-const bcrypt = require('bcrypt')
 
 // const { Client } = require('pg')
 
@@ -22,21 +23,6 @@ const bcrypt = require('bcrypt')
 //     console.log("OK")
 //     client.end()
 // })
-
-const { Client } = require('pg');
-
-
-
-// postgres://mihhtzqwfpbejw:577b24af9bd51732c1dbb1b2373687faa7b826a31de854daedd3feac33a4d5dd@ec2-176-34-123-50.eu-west-1.compute.amazonaws.com:5432/d7cc53nqio36s1
-
-const client = new Client({
-    connectionString: "postgres://mihhtzqwfpbejw:577b24af9bd51732c1dbb1b2373687faa7b826a31de854daedd3feac33a4d5dd@ec2-176-34-123-50.eu-west-1.compute.amazonaws.com:5432/d7cc53nqio36s1",
-    ssl: {
-        rejectUnauthorized: false
-    }
-});
-
-client.connect();
 
 app.get('/', (req, res) => {
     const query = "SELECT * FROM usrs"
