@@ -6,8 +6,12 @@ POST http://localhost:3000/register
 Content-Type: application/json
 
 {
-    "username": "adxl2",
+    "username": "adxl",
     "firstName": "Adel",
     "lastName": "Senhadji",
     "password": "password"
 }
+
+###
+
+DELETE http://localhost:3000/genocide

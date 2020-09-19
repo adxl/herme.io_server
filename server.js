@@ -6,6 +6,7 @@ const app = express()
 app.use(express.json())
 app.use(require('./auth'))
 
+const bcrypt = require('bcrypt')
 
 // const { Client } = require('pg')
 
@@ -46,15 +47,15 @@ app.get('/', (req, res) => {
     })
 })
 
-app.post('/register', (req, res) => {
+app.post('/register', async (req, res) => {
     const user =
     {
         username: req.body.username,
         firstName: req.body.firstName,
         lastName: req.body.lastName,
-        password: req.body.password
+        password: await bcrypt.hash(req.body.password, 10)
     }
-    console.log(user);
+    // console.log(user);
     const query = `INSERT INTO usrs(username,first_name,last_name,password) VALUES('${user.username}','${user.firstName}','${user.lastName}','${user.password}')`
     client.query(query, (err, results) => {
         if (err) throw err;
@@ -62,6 +63,12 @@ app.post('/register', (req, res) => {
     })
 })
 
+app.delete('/genocide', (req, res) => {
+    const query = "DELETE FROM usrs"
+    client.query(query, (err, result) => {
+        res.status(200).send("deleted all users")
+    })
+})
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(port))
