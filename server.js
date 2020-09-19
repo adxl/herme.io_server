@@ -9,21 +9,6 @@ const bcrypt = require('bcrypt')
 app.use(express.json())
 app.use(require('./auth'))
 
-// const { Client } = require('pg')
-
-// const client = new Client({
-//     user: 'postgres',
-//     host: 'localhost',
-//     database: 'hermedb',
-//     password: 'password',
-// })
-
-// client.connect()
-// client.query('SELECT NOW()', (err, res) => {
-//     console.log("OK")
-//     client.end()
-// })
-
 app.get('/', (req, res) => {
     const query = "SELECT * FROM usrs"
     client.query(query, (err, result) => {
@@ -48,9 +33,6 @@ app.post('/register', async (req, res) => {
         res.status(201).send("Created")
     })
 })
-
-
-
 
 app.delete('/genocide', (req, res) => {
     const query = "DELETE FROM usrs"
