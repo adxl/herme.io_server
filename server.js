@@ -5,9 +5,12 @@ const app = express()
 
 const client = require('./db.js');
 const bcrypt = require('bcrypt')
+const auth = require('./auth.js')
+app.use(auth.router)
+// const jwt = require('jsonwebtoken')
 
 app.use(express.json())
-app.use(require('./auth'))
+// app.use(require('./auth'))
 
 app.get('/', (req, res) => {
     const query = "SELECT * FROM usrs"
@@ -15,6 +18,15 @@ app.get('/', (req, res) => {
         if (err) throw err;
         console.log('fetch');
         res.status(200).json(result.rows)
+    })
+})
+
+app.get('/dash', auth.authToken, (req, res) => {
+    // console.log(req.username);
+    const query = `SELECT first_name FROM usrs WHERE username='${req.username}'`
+    client.query(query, (err, result) => {
+        if (err) throw err;
+        res.status(200).send('Hello ' + req.username)
     })
 })
 
