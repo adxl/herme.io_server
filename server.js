@@ -6,8 +6,6 @@ const app = express()
 app.use(express.json())
 app.use(require('./auth'))
 
-console.log("DB");
-console.log(process.env.DATABASE_URL);
 
 // const { Client } = require('pg')
 
@@ -39,17 +37,23 @@ const client = new Client({
 
 client.connect();
 
-client.query('SELECT * FROM usrs;', (err, res) => {
-    if (err) throw err;
-    for (let row of res.rows) {
-        console.log(JSON.stringify(row));
-    }
-    client.end();
-});
-
-
 app.get('/', (req, res) => {
-    res.send('ok')
+    const query = "SELECT * FROM usrs"
+    client.query(query, (err, result) => {
+        if (err) throw err;
+        console.log('fetch');
+        res.status(200).json(result.rows)
+    })
+})
+
+app.post('/', (req, res) => {
+    const name = req.body.name
+    console.log(name);
+    const query = `INSERT INTO usrs(name) VALUES('${name}')`
+    client.query(query, (err, results) => {
+        if (err) throw err;
+        res.status(201).send("Created")
+    })
 })
 
 const port = process.env.PORT || 3000;
