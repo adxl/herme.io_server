@@ -36,10 +36,10 @@ router.post('/login', async (req, res) => {
 const authenticateToken = function (req, res, next) {
     const token = req.headers['authorization']
 
-    if (token == null) res.status(401).send("no token sent")
+    if (token == null) res.status(401).send()
 
     jwt.verify(token, process.env.TOKEN, (err, username) => {
-        if (err) res.status(403).send('FORBIDDEN')
+        if (err) res.status(403).send()
         req.username = username
         next()
     })
