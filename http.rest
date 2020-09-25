@@ -28,4 +28,14 @@ Content-Type: application/json
 }
 
 ###
+
+POST https://herme-io.herokuapp.com/login
+Content-Type: application/json
+
+{
+    "username": "joe",
+    "password": "password"
+}
+
+###
 DELETE http://localhost:3000/genocide

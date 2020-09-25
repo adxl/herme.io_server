@@ -6,6 +6,9 @@ const app = express()
 const client = require('./db.js');
 const bcrypt = require('bcrypt')
 const auth = require('./auth.js')
+
+const cors = require('cors')
+
 app.use(auth.router)
 // const jwt = require('jsonwebtoken')
 
@@ -21,10 +24,7 @@ app.use(express.json())
 //     })
 // })
 
-app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', '*');
-    next();
-});
+app.use(cors())
 
 app.get('/dash', auth.authToken, (req, res) => {
     // console.log(req.username);
