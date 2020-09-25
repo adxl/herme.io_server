@@ -21,6 +21,11 @@ app.use(express.json())
 //     })
 // })
 
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    next();
+});
+
 app.get('/dash', auth.authToken, (req, res) => {
     // console.log(req.username);
     const query = `SELECT first_name FROM usrs WHERE username='${req.username}'`
