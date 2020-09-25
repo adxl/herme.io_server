@@ -8,6 +8,7 @@ const bcrypt = require('bcrypt')
 const auth = require('./auth.js')
 
 const cors = require('cors')
+app.use(cors())
 
 app.use(auth.router)
 // const jwt = require('jsonwebtoken')
@@ -24,7 +25,6 @@ app.use(express.json())
 //     })
 // })
 
-app.use(cors())
 
 app.get('/dash', auth.authToken, (req, res) => {
     // console.log(req.username);
@@ -58,5 +58,5 @@ app.delete('/genocide', (req, res) => {
     })
 })
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 4000;
 app.listen(port, () => console.log(port))
