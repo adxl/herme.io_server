@@ -16,15 +16,15 @@ app.use(auth.router)
 app.use(express.json())
 // app.use(require('./auth'))
 
-// app.get('/', (req, res) => {
-//     const query = "SELECT * FROM usrs"
-//     client.query(query, (err, result) => {
-//         if (err) throw err;
-//         console.log('fetch');
-//         res.status(200).json(result.rows)
-//     })
-// })
-
+// debug
+app.get('/getall', (req, res) => {
+    const query = "SELECT * FROM usrs"
+    client.query(query, (err, result) => {
+        if (err) throw err;
+        console.log('fetch');
+        res.status(200).json(result.rows)
+    })
+})
 
 app.get('/dash', auth.authToken, (req, res) => {
     // console.log(req.username);
