@@ -1,4 +1,4 @@
-GET http://localhost:3000/
+GET https://herme-io.herokuapp.com/getall/
 
 ###
 
@@ -7,11 +7,12 @@ Authorization: eyJhbGciOiJIUzI1NiJ9.am9l.YuigTd6kMTvmoaZyZ0_ItpmlwwEJk9HOtOf5k_-
 
 ###
 
-POST http://localhost:3000/register
+POST http://localhost:4000/register
 Content-Type: application/json
 
 {
     "username": "joe",
+    "email" : "joe@gmail.com",
     "firstName": "Joe",
     "lastName": "Dalton",
     "password": "password"
