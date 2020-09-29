@@ -28,7 +28,7 @@ app.get('/getall', (req, res) => {
 
 app.get('/dash', auth.authToken, (req, res) => {
     // console.log(req.username);
-    const query = `SELECT first_name FROM usrs WHERE username='${req.username}'`
+    const query = `SELECT * FROM usrs WHERE username='${req.username}'`
     client.query(query, (err, result) => {
         if (err) throw err;
         res.status(200).json(result.rows[0])
