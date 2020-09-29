@@ -39,12 +39,13 @@ app.post('/register', async (req, res) => {
     const user =
     {
         username: req.body.username,
+        email: req.body.email,
         firstName: req.body.firstName,
         lastName: req.body.lastName,
         password: await bcrypt.hash(req.body.password, 10)
     }
     // console.log(user);
-    const query = `INSERT INTO usrs(username,first_name,last_name,password) VALUES('${user.username}','${user.firstName}','${user.lastName}','${user.password}')`
+    const query = `INSERT INTO usrs(username,email,first_name,last_name,password) VALUES('${user.username}','${user.email}','${user.firstName}','${user.lastName}','${user.password}')`
     client.query(query, (err, results) => {
         if (err) throw err;
         res.status(201).send()
