@@ -46,28 +46,20 @@ app.get('/posts', auth.authToken, (req, res) => {
 })
 
 app.post('/posts', auth.authToken, async (req, res) => {
-
     const checkIdQuery = `SELECT * FROM posts WHERE id_post=`
-    let id;
-    let idExists;
-
-    console.log(req.body);
+    let id, idExists;
 
     do {
         id = Math.floor(Math.random() * (9999 - 1000) + 1000)
         let idExists = new Promise((resolve, reject) => {
             client.query(checkIdQuery + `'${id}'`, (err, result) => {
                 if (err) throw err;
-                if (!result.rows)
-                    resolve(false);
-                resolve(false)
+                if (!result.rows.length)
+                    resolve(false)
+                resolve(true)
             })
         });
-
         idExists = await idExists
-
-        console.log(idExists);
-
     } while (idExists);
 
     const post = {
@@ -85,9 +77,18 @@ app.post('/posts', auth.authToken, async (req, res) => {
         if (err) throw err;
         res.status(201).send()
     })
-
-
 })
+
+app.get('/friends', auth.authToken, (req, res) => {
+    const username = req.username
+    const query = `SELECT friend FROM friends where usr='${username}'`
+    client.query(query, (err, data) => {
+        if (err) throw err;
+        res.status(200).json(data.rows)
+    })
+})
+
+
 
 
 app.post('/register', async (req, res) => {
@@ -107,10 +108,25 @@ app.post('/register', async (req, res) => {
     })
 })
 
-app.delete('/genocide', (req, res) => {
+
+
+
+
+
+/*   DANGER   ZONE    */
+
+
+app.delete('/usergenocide', (req, res) => {
     const query = "DELETE FROM usrs"
     client.query(query, (err, result) => {
         res.status(200).send("deleted all users")
+    })
+})
+
+app.delete('/postsgenocide', (req, res) => {
+    const query = "DELETE FROM posts"
+    client.query(query, (err, result) => {
+        res.status(200).send("deleted all posts")
     })
 })
 
