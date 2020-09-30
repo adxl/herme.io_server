@@ -37,6 +37,59 @@ app.get('/dash', auth.authToken, (req, res) => {
     })
 })
 
+app.get('/posts', auth.authToken, (req, res) => {
+    const query = `SELECT * FROM posts WHERE author='${req.username}'`
+    client.query(query, (err, result) => {
+        if (err) throw err;
+        res.status(200).json(result.rows)
+    })
+})
+
+app.post('/posts', auth.authToken, async (req, res) => {
+
+    const checkIdQuery = `SELECT * FROM posts WHERE id_post=`
+    let id;
+    let idExists;
+
+    console.log(req.body);
+
+    do {
+        id = Math.floor(Math.random() * (9999 - 1000) + 1000)
+        let idExists = new Promise((resolve, reject) => {
+            client.query(checkIdQuery + `'${id}'`, (err, result) => {
+                if (err) throw err;
+                if (!result.rows)
+                    resolve(false);
+                resolve(false)
+            })
+        });
+
+        idExists = await idExists
+
+        console.log(idExists);
+
+    } while (idExists);
+
+    const post = {
+        author: req.username,
+        id: id,
+        title: req.body.title,
+        content: req.body.content,
+        likes: 0
+    }
+
+    const addNewPostQuery = `INSERT INTO posts(id_post,title,content,likes_count,author) 
+    VALUES ('${post.id}','${post.title}','${post.content}','${post.likes}','${post.author}')`
+
+    client.query(addNewPostQuery, (err, result) => {
+        if (err) throw err;
+        res.status(201).send()
+    })
+
+
+})
+
+
 app.post('/register', async (req, res) => {
     const user =
     {
@@ -62,4 +115,5 @@ app.delete('/genocide', (req, res) => {
 })
 
 const port = process.env.PORT || 4000;
+console.clear()
 app.listen(port, () => console.log(port))

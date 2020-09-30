@@ -7,6 +7,21 @@ Authorization: eyJhbGciOiJIUzI1NiJ9.YWR4bA.bR3AWqNvcoxyyywLa8B6O-WEqKGGjptR84Abp
 
 ###
 
+GET http://localhost:4000/posts
+Authorization: eyJhbGciOiJIUzI1NiJ9.YWR4bA.bR3AWqNvcoxyyywLa8B6O-WEqKGGjptR84AbpcjlQ5A
+
+###
+
+POST http://localhost:4000/posts
+Authorization: eyJhbGciOiJIUzI1NiJ9.YWR4bA.bR3AWqNvcoxyyywLa8B6O-WEqKGGjptR84AbpcjlQ5A
+Content-Type: application/json
+
+{
+    "title": "Post 1",
+    "content": "Content 1"
+}
+###
+
 POST http://localhost:4000/register
 Content-Type: application/json
 
@@ -40,3 +55,7 @@ Content-Type: application/json
 
 ###
 DELETE http://localhost:3000/genocide
+
+###
+
+DELETE http://localhost:4000/postsgenocide
