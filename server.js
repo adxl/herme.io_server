@@ -97,7 +97,7 @@ app.get('/requests', auth.authToken, (req, res) => {
     })
 })
 
-app.post('/requests', auth.authToken, async (req, res) => {
+app.post('/requests/add', auth.authToken, async (req, res) => {
     const username = req.username
     const friend_username = req.body.friend
 
@@ -130,6 +130,41 @@ app.post('/requests', auth.authToken, async (req, res) => {
         if (err) throw err;
         res.status(201).send()
 
+    })
+})
+
+app.post('/requests/accept', auth.authToken, async (req, res) => {
+    const username = req.username
+    const friendToAccept = req.body.friend
+
+    if (username === friendToAccept) {
+        res.status(400).send()
+        return
+    }
+
+    const friendExistsQuery = `SELECT usr FROM friend_requests WHERE friend='${username}' AND usr='${friendToAccept}'`
+    let friendExists = new Promise((resolve, reject) => {
+        client.query(friendExistsQuery, (err, result) => {
+            if (err) throw err;
+            if (!result.rows.length)
+                resolve(false)
+            resolve(true)
+        })
+    });
+
+    friendExists = await friendExists
+
+    if (!friendExists) {
+        res.status(404).send()
+        return
+    }
+
+    const addFriendQuery = `INSERT INTO friends (usr,friend)
+    VALUES ('${username}','${friendToAccept}'), ('${friendToAccept}','${username}')`
+
+    client.query(addFriendQuery, (err, result) => {
+        if (err) throw err;
+        res.status(201).send()
     })
 })
 
