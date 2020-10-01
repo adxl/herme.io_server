@@ -88,8 +88,50 @@ app.get('/friends', auth.authToken, (req, res) => {
     })
 })
 
+app.get('/requests', auth.authToken, (req, res) => {
+    const username = req.username
+    const query = `SELECT usr FROM friend_requests WHERE friend='${username}'`
+    client.query(query, (err, data) => {
+        if (err) throw err;
+        res.status(200).json(data.rows)
+    })
+})
 
+app.post('/requests', auth.authToken, async (req, res) => {
+    const username = req.username
+    const friend_username = req.body.friend
 
+    if (username === friend_username) {
+        res.status(400).send('Bad request')
+        return
+    }
+
+    const checkFriendQuery = `SELECT * FROM usrs WHERE username='${friend_username}'`
+
+    let friendExists = new Promise((resolve, reject) => {
+        client.query(checkFriendQuery, (err, result) => {
+            if (err) throw err;
+            if (!result.rows.length)
+                resolve(false)
+            resolve(true)
+        })
+    });
+
+    friendExists = await friendExists
+
+    if (!friendExists) {
+        res.status(404).send('not found')
+        return
+    }
+
+    const requestQuery = `INSERT INTO friend_requests(usr,friend)
+    VALUES ('${username}','${friend_username}')`
+    client.query(requestQuery, (err, result) => {
+        if (err) throw err;
+        res.status(201).send()
+
+    })
+})
 
 app.post('/register', async (req, res) => {
     const user =
