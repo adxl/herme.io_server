@@ -17,8 +17,7 @@ Authorization: eyJhbGciOiJIUzI1NiJ9.YWR4bA.bR3AWqNvcoxyyywLa8B6O-WEqKGGjptR84Abp
 Content-Type: application/json
 
 {
-    "title": "Post 1",
-    "content": "Content 1"
+    "content": "Content 4"
 }
 ###
 

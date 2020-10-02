@@ -65,13 +65,12 @@ app.post('/posts', auth.authToken, async (req, res) => {
     const post = {
         author: req.username,
         id: id,
-        title: req.body.title,
         content: req.body.content,
         likes: 0
     }
 
-    const addNewPostQuery = `INSERT INTO posts(id_post,title,content,likes_count,author) 
-    VALUES ('${post.id}','${post.title}','${post.content}','${post.likes}','${post.author}')`
+    const addNewPostQuery = `INSERT INTO posts(id_post,content,likes_count,author) 
+    VALUES ('${post.id}','${post.content}','${post.likes}','${post.author}')`
 
     client.query(addNewPostQuery, (err, result) => {
         if (err) throw err;
