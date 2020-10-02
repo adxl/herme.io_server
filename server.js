@@ -38,6 +38,62 @@ app.get('/dash', auth.authToken, (req, res) => {
     })
 })
 
+app.get('/users/:id', auth.authToken, async (req, res) => {
+    const username = req.username
+    const userId = req.params.id
+
+    if (username === userId) {
+        res.status(400).send()
+        return
+    }
+
+    const userExistsQuery = `SELECT * FROM usrs WHERE username='${userId}'`
+    let userExists = new Promise((resolve, reject) => {
+        client.query(userExistsQuery, (err, result) => {
+            if (err) throw err;
+            if (!result.rows.length)
+                resolve(false)
+            resolve(true)
+        })
+    });
+
+    userExists = await userExists
+
+    if (!userExists) {
+        res.status(404).send()
+        return
+    }
+
+    const getUserQuery = `SELECT * FROM usrs WHERE username='${userId}'`
+    let userData = new Promise((resolve, reject) => {
+        client.query(getUserQuery, (err, result) => {
+            if (err) throw err;
+            let data = result.rows[0]
+            delete data.password
+            delete data.email
+            resolve(data)
+        })
+    })
+
+    const isFriendQuery = `SELECT * FROM friends 
+    WHERE usr='${username}' AND friend='${userId}'`
+    let isFriend = new Promise((resolve, reject) => {
+        client.query(isFriendQuery, (err, result) => {
+            if (err) throw err;
+            if (!result.rows.length)
+                resolve(false)
+            resolve(true)
+        })
+    })
+
+    let user = {
+        userData: await userData,
+        isFriend: await isFriend
+    }
+
+    res.status(200).json(user)
+})
+
 app.get('/posts', auth.authToken, (req, res) => {
     const query = `SELECT * FROM posts WHERE author='${req.username}'`
     client.query(query, (err, result) => {
