@@ -7,7 +7,8 @@ const client = require('./db.js');
 const bcrypt = require('bcrypt')
 const auth = require('./auth.js')
 
-const cors = require('cors')
+const cors = require('cors');
+const { query } = require('./db.js');
 app.use(cors())
 
 app.use(auth.router)
@@ -75,6 +76,33 @@ app.post('/posts', auth.authToken, async (req, res) => {
     client.query(addNewPostQuery, (err, result) => {
         if (err) throw err;
         res.status(201).send()
+    })
+})
+
+app.delete('/posts', auth.authToken, async (req, res) => {
+    const username = req.username
+    const id = req.body.id
+    const postExistsQuery = `SELECT * FROM posts WHERE id_post='${id}'`
+
+    let postExists = new Promise((resolve, reject) => {
+        client.query(postExistsQuery, (err, result) => {
+            if (err) throw err;
+            if (!result.rows.length)
+                resolve(false)
+            resolve(true)
+        })
+    });
+    postExists = await postExists
+
+    if (!postExists) {
+        res.status(404).send()
+        return
+    }
+
+    const deletePostQuery = `DELETE FROM posts WHERE id_post='${id}'`
+    client.query(deletePostQuery, (err, result) => {
+        if (err) throw err;
+        res.status(200).send()
     })
 })
 
