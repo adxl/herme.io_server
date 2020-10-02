@@ -162,12 +162,37 @@ app.delete('/posts', auth.authToken, async (req, res) => {
     })
 })
 
-app.get('/friends', auth.authToken, (req, res) => {
+app.get('/friends', auth.authToken, async (req, res) => {
     const username = req.username
-    const query = `SELECT friend FROM friends where usr='${username}'`
-    client.query(query, (err, data) => {
+    const friendsQuery = `SELECT friend FROM friends where usr='${username}'`
+
+    let friends = new Promise((resolve, reject) => {
+        client.query(friendsQuery, (err, results) => {
+            if (err) throw err;
+            if (!results.rows.length)
+                resolve(false)
+            resolve(results.rows)
+        })
+    });
+
+    friends = await friends
+
+    console.log(friends);
+    if (!friends.length) {
+        res.status(200).json({ friends: [] })
+        return
+    }
+
+    let queryInValues = '('
+    friends.forEach(f => {
+        queryInValues += `'${f.friend}',`
+    });
+    queryInValues = queryInValues.slice(0, -1);
+
+    const getFriendsQuery = `SELECT username,first_name,last_name FROM usrs WHERE username IN ${queryInValues}) `
+    client.query(getFriendsQuery, (err, results) => {
         if (err) throw err;
-        res.status(200).json(data.rows)
+        res.status(200).json(results.rows)
     })
 })
 
