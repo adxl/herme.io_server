@@ -55,7 +55,7 @@ Content-Type: application/json
     "friend" : "adxl"
 }
 ###
-POST http://localhost:4000/requests
+POST http://localhost:4000/requests/add
 Authorization: eyJhbGciOiJIUzI1NiJ9.YWR4bA.bR3AWqNvcoxyyywLa8B6O-WEqKGGjptR84AbpcjlQ5A
 Content-Type: application/json
 

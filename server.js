@@ -86,9 +86,21 @@ app.get('/users/:id', auth.authToken, async (req, res) => {
         })
     })
 
+    const isRequestedQuery = `SELECT * FROM requests 
+    WHERE usr='${username}' AND friend='${userId}'`
+    let isRequested = new Promise((resolve, reject) => {
+        client.query(isRequestedQuery, (err, result) => {
+            if (err) throw err;
+            if (!result.rows.length)
+                resolve(false)
+            resolve(true)
+        })
+    })
+
     let user = {
         userData: await userData,
-        isFriend: await isFriend
+        isFriend: await isFriend,
+        isRequested: await isRequested
     }
 
     res.status(200).json(user)
@@ -213,6 +225,8 @@ app.post('/requests/add', auth.authToken, async (req, res) => {
         res.status(400).send('Bad request')
         return
     }
+
+
 
     const checkFriendQuery = `SELECT * FROM usrs WHERE username='${friend_username}'`
 
