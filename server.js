@@ -86,7 +86,7 @@ app.get('/users/:id', auth.authToken, async (req, res) => {
         })
     })
 
-    const isRequestedQuery = `SELECT * FROM requests 
+    const isRequestedQuery = `SELECT * FROM friend_requests 
     WHERE usr='${username}' AND friend='${userId}'`
     let isRequested = new Promise((resolve, reject) => {
         client.query(isRequestedQuery, (err, result) => {
