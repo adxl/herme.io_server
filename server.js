@@ -75,6 +75,10 @@ app.get('/users/:id', auth.authToken, async (req, res) => {
     let userData = new Promise((resolve, reject) => {
         client.query(getUserQuery, (err, result) => {
             if (err) throw err;
+            if (!result.rows.length) {
+                res.status(404).send()
+                return
+            }
             let data = result.rows[0]
             delete data.password
             delete data.email
@@ -82,32 +86,33 @@ app.get('/users/:id', auth.authToken, async (req, res) => {
         })
     })
 
-    const isFriendQuery = `SELECT * FROM friends 
-    WHERE usr='${username}' AND friend='${userId}'`
-    let isFriend = new Promise((resolve, reject) => {
-        client.query(isFriendQuery, (err, result) => {
-            if (err) throw err;
-            if (!result.rows.length)
-                resolve(false)
-            resolve(true)
-        })
-    })
+    // const isFriendQuery = `SELECT * FROM friends 
+    // WHERE usr='${username}' AND friend='${userId}'`
+    // let isFriend = new Promise((resolve, reject) => {
+    //     client.query(isFriendQuery, (err, result) => {
+    //         if (err) throw err;
+    //         if (!result.rows.length)
+    //             resolve(false)
+    //         resolve(true)
+    //     })
+    // })
 
-    const isRequestedQuery = `SELECT * FROM friend_requests 
-    WHERE usr='${username}' AND friend='${userId}'`
-    let isRequested = new Promise((resolve, reject) => {
-        client.query(isRequestedQuery, (err, result) => {
-            if (err) throw err;
-            if (!result.rows.length)
-                resolve(false)
-            resolve(true)
-        })
-    })
+    // const isRequestedQuery = `SELECT * FROM friend_requests 
+    // WHERE usr='${username}' AND friend='${userId}'`
+    // let isRequested = new Promise((resolve, reject) => {
+    //     client.query(isRequestedQuery, (err, result) => {
+    //         if (err) throw err;
+    //         if (!result.rows.length)
+    //             resolve(false)
+    //         resolve(true)
+    //     })
+    // })
 
     let user = {
         userData: await userData,
-        isFriend: await isFriend,
-        isRequested: await isRequested
+        isFriend: await dataPairExists('friends', 'usr', username, 'friend', userId),
+        isRequested: await dataPairExists('friend_requests', 'usr', username, 'friend', userId),
+        isInvited: await dataPairExists('friend_requests', 'usr', userId, 'friend', username)
     }
 
     res.status(200).json(user)
