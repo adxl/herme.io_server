@@ -337,8 +337,6 @@ app.post('/register', async (req, res) => {
 })
 
 
-
-
 async function dataExist(table, column, value) {
     const query = `SELECT * FROM ${table} WHERE ${column}='${value}'`
     let exists = new Promise((resolve, reject) => {
@@ -377,13 +375,16 @@ async function dataPairExists(table, column_1, value_1, column_2, value_2) {
 app.delete('/usergenocide', (req, res) => {
     const query = "DELETE FROM usrs"
     client.query(query, (err, result) => {
-        res.status(200).send("deleted all users")
+        if (err) throw err
+        console.log(result);
+        res.status(200).json(result)
     })
 })
 
 app.delete('/postsgenocide', (req, res) => {
     const query = "DELETE FROM posts"
     client.query(query, (err, result) => {
+        if (err) throw err
         res.status(200).send("deleted all posts")
     })
 })
