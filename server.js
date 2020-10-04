@@ -32,6 +32,10 @@ app.get('/dash', auth.authToken, (req, res) => {
     const query = `SELECT * FROM usrs WHERE username='${req.username}'`
     client.query(query, (err, result) => {
         if (err) throw err;
+        if (!result.rows.length) {
+            res.status(404).send()
+            return
+        }
         let data = result.rows[0]
         delete data.password
         res.status(200).json(data)
