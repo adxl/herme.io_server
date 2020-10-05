@@ -310,6 +310,31 @@ app.post('/requests/invite', auth.authToken, async (req, res) => {
     })
 })
 
+app.post('/requests/cancel', auth.authToken, async (req, res) => {
+    const username = req.username
+    const friendToCancel = req.body.friend
+
+    if (username === friendToCancel) {
+        res.status(400).send()
+        return
+    }
+
+    let isInviteSent = await dataPairExists('friend_requests', 'usr', username, 'friend', friendToCancel)
+
+    if (!isInviteSent) {
+        res.status(400).send()
+        return
+    }
+
+    const removeRequestQuery = `DELETE FROM friend_requests
+    WHERE usr='${username}' AND friend='${friendToCancel}'`
+    client.query(removeRequestQuery, (err, result) => {
+        if (err) throw err;
+        res.status(200).send()
+    })
+})
+
+
 app.post('/requests/accept', auth.authToken, async (req, res) => {
     const username = req.username
     const friendToAccept = req.body.friend
