@@ -39,10 +39,18 @@ Content-Type: application/json
 
 ###
 GET http://localhost:4000/friends
-Authorization: eyJhbGciOiJIUzI1NiJ9.YWR4bA.bR3AWqNvcoxyyywLa8B6O-WEqKGGjptR84AbpcjlQ5A
+Authorization: eyJhbGciOiJIUzI1NiJ9.Y2o.3UdaDuLN6dXqD3nTDQ-URKPg06ingn0zxgowfz56w78
 
 ###
 
+POST http://localhost:4000/friends/remove
+Authorization: eyJhbGciOiJIUzI1NiJ9.Y2o.3UdaDuLN6dXqD3nTDQ-URKPg06ingn0zxgowfz56w78
+Content-Type: application/json
+
+{
+    "friend": "adxl"
+}
+###
 GET http://localhost:4000/requests
 Authorization: eyJhbGciOiJIUzI1NiJ9.amJhcm5z.ZQ2cdMZ77pg5aqHk-ZyMpxwEuMGWuZBK5PVF62W_8LY
 
