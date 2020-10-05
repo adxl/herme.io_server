@@ -220,6 +220,31 @@ app.get('/friends', auth.authToken, async (req, res) => {
     })
 })
 
+app.post('/friends/remove', auth.authToken, async (req, res) => {
+    const username = req.username
+    const friendToRemove = req.body.friend
+
+    let friendExists = await dataExist('usrs', 'username', friendToRemove)
+    if (!friendExists) {
+        res.status(404).send()
+        return
+    }
+
+    let isFriend = await dataPairExists('friends', 'usr', username, 'friend', friendToRemove)
+    if (!isFriend) {
+        res.status(400).send('not friend')
+        return
+    }
+
+    const removeFriendQuery = `DELETE FROM friends
+    WHERE usr='${username}' AND friend='${friendToRemove}'
+    OR usr='${friendToRemove}' AND friend='${username}'`;
+    client.query(removeFriendQuery, (err, result) => {
+        if (err) throw err
+        res.status(200).send()
+    })
+})
+
 app.get('/requests', auth.authToken, (req, res) => {
     const username = req.username
     const query = `SELECT usr FROM friend_requests WHERE friend='${username}'`
