@@ -328,6 +328,32 @@ app.post('/requests/accept', auth.authToken, async (req, res) => {
 
 })
 
+app.post('/requests/deny', auth.authToken, async (req, res) => {
+    const username = req.username
+    const friendToRefuse = req.body.friend
+
+    if (username === friendToRefuse) {
+        res.status(400).send()
+        return
+    }
+
+    let isUserInvited = await dataPairExists('friend_requests', 'usr', friendToRefuse, 'friend', username)
+
+    if (!isUserInvited) {
+        res.status(400).send()
+        return
+    }
+
+    const removeRequestQuery = `DELETE FROM friend_requests
+    WHERE usr='${friendToRefuse}' AND friend='${username}'`
+    client.query(removeRequestQuery, (err, result) => {
+        if (err) throw err;
+        res.status(200).send()
+    })
+})
+
+
+
 app.post('/register', async (req, res) => {
     const user =
     {
