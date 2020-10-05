@@ -73,6 +73,15 @@ Content-Type: application/json
 }
 
 ###
+POST http://localhost:4000/requests/cancel
+Authorization: eyJhbGciOiJIUzI1NiJ9.Y2o.3UdaDuLN6dXqD3nTDQ-URKPg06ingn0zxgowfz56w78
+Content-Type: application/json
+
+{
+    "friend": "jbarns"
+}
+
+###
 POST http://localhost:4000/requests/deny
 Authorization: eyJhbGciOiJIUzI1NiJ9.amJhcm5z.ZQ2cdMZ77pg5aqHk-ZyMpxwEuMGWuZBK5PVF62W_8LY
 Content-Type: application/json
@@ -99,7 +108,7 @@ POST http://localhost:4000/login
 Content-Type: application/json
 
 {
-    "username": "cj",
+    "username": "jbarns",
     "password": "pass"
 }
 
