@@ -46,10 +46,6 @@ app.get('/users/:id', auth.authToken, async (req, res) => {
     const username = req.username
     const userId = req.params.id
 
-    if (username === userId) {
-        res.status(400).send()
-        return
-    }
     //-----------------------------
     // const userExistsQuery = `SELECT * FROM usrs WHERE username='${userId}'`
     // let userExists = new Promise((resolve, reject) => {
@@ -112,7 +108,8 @@ app.get('/users/:id', auth.authToken, async (req, res) => {
         userData: await userData,
         isFriend: await dataPairExists('friends', 'usr', username, 'friend', userId),
         isRequested: await dataPairExists('friend_requests', 'usr', username, 'friend', userId),
-        isInvited: await dataPairExists('friend_requests', 'usr', userId, 'friend', username)
+        isInvited: await dataPairExists('friend_requests', 'usr', userId, 'friend', username),
+        me: username === userId
     }
 
     res.status(200).json(user)
