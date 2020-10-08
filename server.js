@@ -418,10 +418,10 @@ app.post('/requests/deny', auth.authToken, async (req, res) => {
 app.post('/register', async (req, res) => {
     const user =
     {
-        username: req.body.username,
-        email: req.body.email,
-        firstName: req.body.firstName,
-        lastName: req.body.lastName,
+        username: req.body.username.toLowerCase(),
+        email: req.body.email.toLowerCase(),
+        firstName: upperCaseFirst(req.body.firstName),
+        lastName: upperCaseFirst(req.body.lastName),
         password: await bcrypt.hash(req.body.password, 10)
     }
     // console.log(user);
@@ -463,13 +463,17 @@ async function dataPairExists(table, column_1, value_1, column_2, value_2) {
     return exists
 }
 
+upperCaseFirst = (str) => {
+    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
+}
+
 
 
 /*   DANGER   ZONE    */
 
 
 app.delete('/usergenocide', (req, res) => {
-    const query = "DELETE FROM usrs"
+    const query = "DELETE FROM friend_requests"
     client.query(query, (err, result) => {
         if (err) throw err
         console.log(result);
