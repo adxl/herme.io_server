@@ -8,7 +8,7 @@ const bcrypt = require('bcrypt')
 const auth = require('./auth.js')
 
 const cors = require('cors');
-const { query } = require('./db.js');
+const { query, escapeLiteral } = require('./db.js');
 app.use(cors())
 
 app.use(auth.router)
@@ -126,6 +126,20 @@ app.get('/posts', auth.authToken, (req, res) => {
     })
 })
 
+app.get('/posts/friends', auth.authToken, (req, res) => {
+    const username = req.username
+    const getFriendsQuery = `SELECT friend FROM friends WHERE usr='${username}'`
+    const getPostsQuery = `SELECT * FROM posts WHERE author IN (${getFriendsQuery})`
+
+    client.query(getPostsQuery, (err, result) => {
+        if (err) {
+            throw err
+        }
+        res.status(200).json(result.rows)
+    })
+})
+
+
 app.post('/posts', auth.authToken, async (req, res) => {
     const checkIdQuery = `SELECT * FROM posts WHERE id_post=`
     let id, idExists;
@@ -150,7 +164,7 @@ app.post('/posts', auth.authToken, async (req, res) => {
         content: req.body.content,
         likes: 0
     }
-
+    console.log(post.content);
     const addNewPostQuery = `INSERT INTO posts(id_post,content,likes_count,author) 
     VALUES ('${post.id}','${post.content}','${post.likes}','${post.author}')`
 
