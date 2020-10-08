@@ -99,10 +99,10 @@ POST http://localhost:4000/register
 Content-Type: application/json
 
 {
-    "username": "joe",
-    "email" : "joe@gmail.com",
-    "firstName": "Joe",
-    "lastName": "Dalton",
+    "username": "jaMes",
+    "email" : "jjAmes@gmail.Com",
+    "firstName": "james",
+    "lastName": "aMes",
     "password": "pass"
 }
 
