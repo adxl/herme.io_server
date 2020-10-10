@@ -8,27 +8,12 @@ const bcrypt = require('bcrypt')
 const auth = require('./auth.js')
 
 const cors = require('cors');
-const { query, escapeLiteral } = require('./db.js');
 app.use(cors())
 
 app.use(auth.router)
-// const jwt = require('jsonwebtoken')
-
 app.use(express.json())
-// app.use(require('./auth'))
-
-// debug
-app.get('/getall', (req, res) => {
-    const query = "SELECT * FROM usrs"
-    client.query(query, (err, result) => {
-        if (err) throw err;
-        console.log('fetch');
-        res.status(200).json(result.rows)
-    })
-})
 
 app.get('/dash', auth.authToken, (req, res) => {
-    // console.log(req.username);
     const query = `SELECT * FROM usrs WHERE username='${req.username}'`
     client.query(query, (err, result) => {
         if (err) throw err;
@@ -45,20 +30,6 @@ app.get('/dash', auth.authToken, (req, res) => {
 app.get('/users/:id', auth.authToken, async (req, res) => {
     const username = req.username
     const userId = req.params.id
-
-    //-----------------------------
-    // const userExistsQuery = `SELECT * FROM usrs WHERE username='${userId}'`
-    // let userExists = new Promise((resolve, reject) => {
-    //     client.query(userExistsQuery, (err, result) => {
-    //         if (err) throw err;
-    //         if (!result.rows.length)
-    //             resolve(false)
-    //         resolve(true)
-    //     })
-    // });
-
-    // userExists = await userExists
-    // ----------------------------------------------
 
     let userExists = await dataExist('usrs', 'username', userId)
 
@@ -81,28 +52,6 @@ app.get('/users/:id', auth.authToken, async (req, res) => {
             resolve(data)
         })
     })
-
-    // const isFriendQuery = `SELECT * FROM friends 
-    // WHERE usr='${username}' AND friend='${userId}'`
-    // let isFriend = new Promise((resolve, reject) => {
-    //     client.query(isFriendQuery, (err, result) => {
-    //         if (err) throw err;
-    //         if (!result.rows.length)
-    //             resolve(false)
-    //         resolve(true)
-    //     })
-    // })
-
-    // const isRequestedQuery = `SELECT * FROM friend_requests 
-    // WHERE usr='${username}' AND friend='${userId}'`
-    // let isRequested = new Promise((resolve, reject) => {
-    //     client.query(isRequestedQuery, (err, result) => {
-    //         if (err) throw err;
-    //         if (!result.rows.length)
-    //             resolve(false)
-    //         resolve(true)
-    //     })
-    // })
 
     let user = {
         userData: await userData,
@@ -136,22 +85,10 @@ app.get('/posts/friends', auth.authToken, (req, res) => {
     })
 })
 
-
 app.post('/posts', auth.authToken, async (req, res) => {
-    const checkIdQuery = `SELECT * FROM posts WHERE id_post=`
     let id, idExists;
-
     do {
         id = Math.floor(Math.random() * (9999 - 1000) + 1000)
-        // let idExists = new Promise((resolve, reject) => {
-        //     client.query(checkIdQuery + `'${id}'`, (err, result) => {
-        //         if (err) throw err;
-        //         if (!result.rows.length)
-        //             resolve(false)
-        //         resolve(true)
-        //     })
-        // });
-        // idExists = await idExists
         idExists = await dataExist('posts', 'id_post', id)
     } while (idExists);
 
@@ -172,19 +109,7 @@ app.post('/posts', auth.authToken, async (req, res) => {
 })
 
 app.delete('/posts', auth.authToken, async (req, res) => {
-    const username = req.username
     const id = req.body.id
-
-    // const postExistsQuery = `SELECT * FROM posts WHERE id_post='${id}'`
-    // let postExists = new Promise((resolve, reject) => {
-    //     client.query(postExistsQuery, (err, result) => {
-    //         if (err) throw err;
-    //         if (!result.rows.length)
-    //             resolve(false)
-    //         resolve(true)
-    //     })
-    // });
-    // postExists = await postExists
 
     let postExists = await dataExist('posts', 'id_post', id)
 
@@ -274,18 +199,6 @@ app.post('/requests/invite', auth.authToken, async (req, res) => {
         return
     }
 
-    // const checkFriendQuery = `SELECT * FROM usrs WHERE username='${friend_username}'`
-    // let friendExists = new Promise((resolve, reject) => {
-    //     client.query(checkFriendQuery, (err, result) => {
-    //         if (err) throw err;
-    //         if (!result.rows.length)
-    //             resolve(false)
-    //         resolve(true)
-    //     })
-    // });
-
-    // friendExists = await friendExists
-
     let friendExists = await dataExist('usrs', 'username', friend_username)
 
     if (!friendExists) {
@@ -345,7 +258,6 @@ app.post('/requests/cancel', auth.authToken, async (req, res) => {
     })
 })
 
-
 app.post('/requests/accept', auth.authToken, async (req, res) => {
     const username = req.username
     const friendToAccept = req.body.friend
@@ -354,16 +266,6 @@ app.post('/requests/accept', auth.authToken, async (req, res) => {
         res.status(400).send()
         return
     }
-
-    // const friendExistsQuery = `SELECT * FROM friend_requests WHERE friend='${username}' AND usr='${friendToAccept}'`
-    // let friendExists = new Promise((resolve, reject) => {
-    //     client.query(friendExistsQuery, (err, result) => {
-    //         if (err) throw err;
-    //         if (!result.rows.length)
-    //             resolve(false)
-    //         resolve(true)
-    //     })
-    // });
 
     let isUserInvited = await dataPairExists('friend_requests', 'usr', friendToAccept, 'friend', username)
 
@@ -376,7 +278,6 @@ app.post('/requests/accept', auth.authToken, async (req, res) => {
     VALUES ('${username}','${friendToAccept}'), ('${friendToAccept}','${username}')`
     client.query(addFriendQuery, (err, result) => {
         if (err) throw err;
-        // res.status(201).send()
     })
 
     const removeRequestQuery = `DELETE FROM friend_requests
@@ -385,8 +286,6 @@ app.post('/requests/accept', auth.authToken, async (req, res) => {
         if (err) throw err;
         res.status(200).send()
     })
-
-
 })
 
 app.post('/requests/deny', auth.authToken, async (req, res) => {
@@ -413,8 +312,6 @@ app.post('/requests/deny', auth.authToken, async (req, res) => {
     })
 })
 
-
-
 app.post('/register', async (req, res) => {
     const user =
     {
@@ -424,14 +321,12 @@ app.post('/register', async (req, res) => {
         lastName: upperCaseFirst(req.body.lastName),
         password: await bcrypt.hash(req.body.password, 10)
     }
-    // console.log(user);
     const query = `INSERT INTO usrs(username,email,first_name,last_name,password) VALUES('${user.username}','${user.email}','${user.firstName}','${user.lastName}','${user.password}')`
     client.query(query, (err, results) => {
         if (err) throw err;
         res.status(201).send()
     })
 })
-
 
 async function dataExist(table, column, value) {
     const query = `SELECT * FROM ${table} WHERE ${column}='${value}'`
@@ -467,10 +362,16 @@ upperCaseFirst = (str) => {
     return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
 }
 
-
-
 /*   DANGER   ZONE    */
 
+app.get('/getall', (req, res) => {
+    const query = "SELECT * FROM usrs"
+    client.query(query, (err, result) => {
+        if (err) throw err;
+        console.log('fetch');
+        res.status(200).json(result.rows)
+    })
+})
 
 app.delete('/usergenocide', (req, res) => {
     const query = "DELETE FROM friend_requests"
@@ -491,7 +392,6 @@ app.delete('/postsgenocide', (req, res) => {
 
 const port = process.env.PORT || 4000;
 console.clear()
-
 
 
 app.listen(port, () => console.log(port))
