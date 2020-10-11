@@ -172,7 +172,8 @@ app.get('/friends/find', auth.authToken, async (req, res) => {
 
     client.query(getNotFriendsQuery, (err, results) => {
         if (err) throw err;
-        res.status(200).json(results.rows)
+        const arr = getThreeFriends(results.rows)
+        res.status(200).json(arr)
     })
 
 })
@@ -381,6 +382,21 @@ async function dataPairExists(table, column_1, value_1, column_2, value_2) {
 
 upperCaseFirst = (str) => {
     return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
+}
+
+getThreeFriends = (friends) => {
+    if (friends.length <= 3) {
+        return friends
+    }
+
+    friends.sort(() => Math.random() - 0.5);
+
+    let arr = []
+    for (let i = 0; i < 3; i++) {
+        arr.push(friends[i])
+    }
+
+    return arr;
 }
 
 /*   DANGER   ZONE    */
