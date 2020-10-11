@@ -156,6 +156,27 @@ app.get('/friends', auth.authToken, async (req, res) => {
     })
 })
 
+app.get('/friends/find', auth.authToken, async (req, res) => {
+    const username = req.username
+
+    const getFriendsQuery = `SELECT friend FROM friends WHERE usr='${username}'`
+    const getRequestsQuery = `SELECT friend FROM friend_requests WHERE usr='${username}'`
+    const getInvitesQuery = `SELECT usr FROM friend_requests WHERE friend='${username}'`
+
+    const getNotFriendsQuery = `SELECT username,first_name,last_name 
+    FROM usrs
+    WHERE username NOT IN (${getFriendsQuery}) 
+    AND username NOT IN (${getRequestsQuery}) 
+    AND username NOT IN (${getInvitesQuery}) 
+    AND username!='${username}'`
+
+    client.query(getNotFriendsQuery, (err, results) => {
+        if (err) throw err;
+        res.status(200).json(results.rows)
+    })
+
+})
+
 app.post('/friends/remove', auth.authToken, async (req, res) => {
     const username = req.username
     const friendToRemove = req.body.friend
