@@ -42,9 +42,14 @@ Content-Type: application/json
 }
 
 ###
+
 GET http://localhost:4000/friends
 Authorization: eyJhbGciOiJIUzI1NiJ9.YWR4bA.bR3AWqNvcoxyyywLa8B6O-WEqKGGjptR84AbpcjlQ5A
 
+###
+
+GET http://localhost:4000/friends/find
+Authorization: eyJhbGciOiJIUzI1NiJ9.YWR4bA.bR3AWqNvcoxyyywLa8B6O-WEqKGGjptR84AbpcjlQ5A
 ###
 
 POST http://localhost:4000/friends/remove
@@ -112,7 +117,7 @@ POST http://localhost:4000/login
 Content-Type: application/json
 
 {
-    "username": "joe",
+    "username": "adxl",
     "password": "pass"
 }
 
