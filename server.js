@@ -100,17 +100,8 @@ app.post('/posts', auth.authToken, async (req, res) => {
         content: req.body.content,
         likes: 0
     }
-    console.log(post.content);
 
-    const values = [post.id, post.content, post.likes, post.author]
-
-    // const addNewPostQuery = SqlString.format('INSERT INTO posts(id_post,content,likes_count,author) VALUES (?,?,?,?)', values);
     const addNewPostQuery = escape(`INSERT INTO posts(id_post,content,likes_count,author) VALUES ('${post.id}', %L ,'${post.likes}','${post.author}')`, post.content);
-
-
-    // const addNewPostQuery = `INSERT INTO posts(id_post,content,likes_count,author) 
-    // VALUES ('${post.id}','${post.content}','${post.likes}','${post.author}')`
-
     client.query(addNewPostQuery, (err, result) => {
         if (err) throw err;
         res.status(201).send()
