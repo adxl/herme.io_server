@@ -10,8 +10,6 @@ const escape = require('pg-escape');
 const cors = require('cors');
 app.use(cors())
 
-
-
 app.use(auth.router)
 app.use(express.json())
 
@@ -123,6 +121,50 @@ app.delete('/posts', auth.authToken, async (req, res) => {
         if (err) throw err;
         res.status(200).send()
     })
+})
+
+app.post('/posts/like', auth.authToken, async (req, res) => {
+    const username = req.username
+    const postId = req.body.postId
+
+    const postExists = await dataExist('posts', 'id_post', postId)
+
+    if (!postExists) {
+        return res.status(404).send()
+    }
+
+    const alreadyLiked = await dataPairExists('likes', 'usr', username, 'post', postId)
+
+    if (!alreadyLiked) {
+        const likePostQuery = `UPDATE posts SET likes_count = likes_count + 1 
+        WHERE id_post='${postId}'`
+        const userVoteQuery = `INSERT INTO likes(usr,post) VALUES('${username}','${postId}')`
+
+        client.query(likePostQuery, (err, result) => {
+            if (err) throw err;
+        })
+
+        client.query(userVoteQuery, (err, result) => {
+            if (err) throw err;
+            return res.status(200).send()
+        })
+
+    } else {  // if user already liked the post
+
+        const unlikePostQuery = `UPDATE posts SET likes_count = likes_count - 1 
+        WHERE id_post='${postId}'`
+        const userUnvoteQuery = `DELETE FROM likes WHERE usr='${username}' AND post='${postId}'`
+
+        client.query(unlikePostQuery, (err, result) => {
+            if (err) throw err;
+
+        })
+
+        client.query(userUnvoteQuery, (err, result) => {
+            if (err) throw err;
+            return res.status(200).send()
+        })
+    }
 })
 
 app.get('/friends', auth.authToken, async (req, res) => {
