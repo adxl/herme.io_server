@@ -65,7 +65,7 @@ app.get('/users/:id', auth.authToken, async (req, res) => {
 })
 
 app.get('/posts', auth.authToken, (req, res) => {
-    const query = `SELECT *,to_char(post_date,'dd/mm/yyy') as post_date FROM posts WHERE author='${req.username}'`
+    const query = `SELECT *,to_char(post_date,'dd/mm/yyyy') as post_date FROM posts WHERE author='${req.username}'`
     client.query(query, (err, result) => {
         if (err) throw err;
         res.status(200).json(result.rows)
@@ -95,7 +95,7 @@ app.post('/posts', auth.authToken, async (req, res) => {
     const post = {
         author: req.username,
         id: id,
-        content: req.body.content,
+        content: req.body.content.trim(),
         likes: 0
     }
 
