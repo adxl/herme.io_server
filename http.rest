@@ -27,7 +27,7 @@ Authorization: eyJhbGciOiJIUzI1NiJ9.YWR4bA.bR3AWqNvcoxyyywLa8B6O-WEqKGGjptR84Abp
 Content-Type: application/json
 
 {
-    "content": "hello with date"
+    "content": "new post bros"
 }
 ###
 POST http://localhost:4000/posts/like
