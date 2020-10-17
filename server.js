@@ -68,7 +68,7 @@ app.get('/posts', auth.authToken, (req, res) => {
     const query = `SELECT *,to_char(post_date,'dd/mm/yyyy hh:mi') as date 
     FROM posts
     WHERE author='${req.username}'
-    ORDER BY date DESC`
+    ORDER BY post_date DESC`
     client.query(query, (err, result) => {
         if (err) throw err;
         res.status(200).json(result.rows)
@@ -78,7 +78,10 @@ app.get('/posts', auth.authToken, (req, res) => {
 app.get('/posts/friends', auth.authToken, (req, res) => {
     const username = req.username
     const getFriendsQuery = `SELECT friend FROM friends WHERE usr='${username}'`
-    const getPostsQuery = `SELECT * FROM posts WHERE author IN (${getFriendsQuery})`
+    const getPostsQuery = `SELECT *,to_char(post_date,'dd/mm/yyyy hh:mi') as date 
+    FROM posts
+    WHERE author IN (${getFriendsQuery})
+    ORDER BY post_date DESC`
 
     client.query(getPostsQuery, (err, result) => {
         if (err) {
