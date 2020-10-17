@@ -65,7 +65,7 @@ app.get('/users/:id', auth.authToken, async (req, res) => {
 })
 
 app.get('/posts', auth.authToken, (req, res) => {
-    const query = `SELECT * FROM posts WHERE author='${req.username}'`
+    const query = `SELECT *,to_char(post_date,'dd/mm/yyy') as post_date FROM posts WHERE author='${req.username}'`
     client.query(query, (err, result) => {
         if (err) throw err;
         res.status(200).json(result.rows)
@@ -99,7 +99,7 @@ app.post('/posts', auth.authToken, async (req, res) => {
         likes: 0
     }
 
-    const addNewPostQuery = escape(`INSERT INTO posts(id_post,content,likes_count,author) VALUES ('${post.id}', %L ,'${post.likes}','${post.author}')`, post.content);
+    const addNewPostQuery = escape(`INSERT INTO posts(id_post,content,likes_count,author,post_date) VALUES ('${post.id}', %L ,'${post.likes}','${post.author}',CURRENT_DATE)`, post.content);
     client.query(addNewPostQuery, (err, result) => {
         if (err) throw err;
         res.status(201).send()
@@ -462,7 +462,7 @@ app.delete('/usergenocide', (req, res) => {
 })
 
 app.delete('/postsgenocide', (req, res) => {
-    const query = "DELETE FROM posts"
+    const query = "TRUNCATE posts CASCADE"
     client.query(query, (err, result) => {
         if (err) throw err
         res.status(200).send("deleted all posts")

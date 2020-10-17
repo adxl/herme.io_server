@@ -22,13 +22,20 @@ GET http://localhost:4000/posts/friends
 Authorization: eyJhbGciOiJIUzI1NiJ9.am9l.YuigTd6kMTvmoaZyZ0_ItpmlwwEJk9HOtOf5k_-VDPQ
 
 ###
-
 POST http://localhost:4000/posts
 Authorization: eyJhbGciOiJIUzI1NiJ9.YWR4bA.bR3AWqNvcoxyyywLa8B6O-WEqKGGjptR84AbpcjlQ5A
 Content-Type: application/json
 
 {
     "content": "hi my name's adel what's up boyssss's"
+}
+###
+POST http://localhost:4000/posts/like
+Authorization: eyJhbGciOiJIUzI1NiJ9.YWR4bA.bR3AWqNvcoxyyywLa8B6O-WEqKGGjptR84AbpcjlQ5A
+Content-Type: application/json
+
+{
+    "postId": "9590"
 }
 ###
 
