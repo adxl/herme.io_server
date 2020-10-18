@@ -122,6 +122,11 @@ app.delete('/posts', auth.authToken, async (req, res) => {
         return
     }
 
+    const deleteLikesQuery = `DELETE FROM likes WHERE post='${id}'`
+    client.query(deleteLikesQuery, (err, result) => {
+        if (err) throw err;
+    })
+
     const deletePostQuery = `DELETE FROM posts WHERE id_post='${id}'`
     client.query(deletePostQuery, (err, result) => {
         if (err) throw err;
