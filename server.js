@@ -2,14 +2,13 @@ require('dotenv').config()
 
 const express = require('express')
 const app = express()
-
 const client = require('./db.js');
-const bcrypt = require('bcrypt')
 const auth = require('./auth.js')
+const bcrypt = require('bcrypt')
 const escape = require('pg-escape');
 const cors = require('cors');
-app.use(cors())
 
+app.use(cors())
 app.use(auth.router)
 app.use(express.json())
 
@@ -451,34 +450,6 @@ getThreeFriends = (friends) => {
 
     return arr;
 }
-
-/*   DANGER   ZONE    */
-
-app.get('/getall', (req, res) => {
-    const query = "SELECT * FROM usrs"
-    client.query(query, (err, result) => {
-        if (err) throw err;
-        console.log('fetch');
-        res.status(200).json(result.rows)
-    })
-})
-
-app.delete('/usergenocide', (req, res) => {
-    const query = "DELETE FROM friend_requests"
-    client.query(query, (err, result) => {
-        if (err) throw err
-        console.log(result);
-        res.status(200).json(result)
-    })
-})
-
-app.delete('/postsgenocide', (req, res) => {
-    const query = "TRUNCATE posts CASCADE"
-    client.query(query, (err, result) => {
-        if (err) throw err
-        res.status(200).send("deleted all posts")
-    })
-})
 
 const port = process.env.PORT || 4000;
 console.clear()
