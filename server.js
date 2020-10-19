@@ -17,12 +17,11 @@ app.get('/dash', auth.authToken, (req, res) => {
     client.query(query, (err, result) => {
         if (err) throw err;
         if (!result.rows.length) {
-            res.status(404).send()
-            return
+            return res.status(404).send()
         }
         let data = result.rows[0]
         delete data.password
-        res.status(200).json(data)
+        return res.status(200).json(data)
     })
 })
 
@@ -33,8 +32,7 @@ app.get('/users/:id', auth.authToken, async (req, res) => {
     let userExists = await dataExist('usrs', 'username', userId)
 
     if (!userExists) {
-        res.status(404).send()
-        return
+        return res.status(404).send()
     }
 
     const getUserQuery = `SELECT * FROM usrs WHERE username='${userId}'`
@@ -42,8 +40,7 @@ app.get('/users/:id', auth.authToken, async (req, res) => {
         client.query(getUserQuery, (err, result) => {
             if (err) throw err;
             if (!result.rows.length) {
-                res.status(404).send()
-                return
+                return res.status(404).send()
             }
             let data = result.rows[0]
             delete data.password
@@ -60,7 +57,7 @@ app.get('/users/:id', auth.authToken, async (req, res) => {
         me: username === userId
     }
 
-    res.status(200).json(user)
+    return res.status(200).json(user)
 })
 
 app.get('/posts', auth.authToken, (req, res) => {
@@ -70,7 +67,7 @@ app.get('/posts', auth.authToken, (req, res) => {
     ORDER BY post_date DESC`
     client.query(query, (err, result) => {
         if (err) throw err;
-        res.status(200).json(result.rows)
+        return res.status(200).json(result.rows)
     })
 })
 
@@ -86,7 +83,7 @@ app.get('/posts/friends', auth.authToken, (req, res) => {
         if (err) {
             throw err
         }
-        res.status(200).json(result.rows)
+        return res.status(200).json(result.rows)
     })
 })
 
@@ -107,7 +104,7 @@ app.post('/posts', auth.authToken, async (req, res) => {
     const addNewPostQuery = escape(`INSERT INTO posts(id_post,content,likes_count,author,post_date) VALUES ('${post.id}', %L ,'${post.likes}','${post.author}',CURRENT_TIMESTAMP)`, post.content);
     client.query(addNewPostQuery, (err, result) => {
         if (err) throw err;
-        res.status(201).send()
+        return res.status(201).send()
     })
 })
 
@@ -117,8 +114,7 @@ app.delete('/posts', auth.authToken, async (req, res) => {
     let postExists = await dataExist('posts', 'id_post', id)
 
     if (!postExists) {
-        res.status(404).send()
-        return
+        return res.status(404).send()
     }
 
     const deleteLikesQuery = `DELETE FROM likes WHERE post='${id}'`
@@ -129,7 +125,7 @@ app.delete('/posts', auth.authToken, async (req, res) => {
     const deletePostQuery = `DELETE FROM posts WHERE id_post='${id}'`
     client.query(deletePostQuery, (err, result) => {
         if (err) throw err;
-        res.status(200).send()
+        return res.status(200).send()
     })
 })
 
@@ -191,8 +187,7 @@ app.get('/friends', auth.authToken, async (req, res) => {
     friends = await friends
 
     if (!friends.length) {
-        res.status(200).json({ friends: [] })
-        return
+        return res.status(200).json({ friends: [] })
     }
 
     let queryInValues = '(';
@@ -204,7 +199,7 @@ app.get('/friends', auth.authToken, async (req, res) => {
     const getFriendsQuery = `SELECT username,first_name,last_name FROM usrs WHERE username IN ${queryInValues})`
     client.query(getFriendsQuery, (err, results) => {
         if (err) throw err;
-        res.status(200).json(results.rows)
+        return res.status(200).json(results.rows)
     })
 })
 
@@ -225,9 +220,8 @@ app.get('/friends/find', auth.authToken, async (req, res) => {
     client.query(getNotFriendsQuery, (err, results) => {
         if (err) throw err;
         const arr = getThreeFriends(results.rows)
-        res.status(200).json(arr)
+        return res.status(200).json(arr)
     })
-
 })
 
 app.post('/friends/remove', auth.authToken, async (req, res) => {
@@ -236,14 +230,12 @@ app.post('/friends/remove', auth.authToken, async (req, res) => {
 
     let friendExists = await dataExist('usrs', 'username', friendToRemove)
     if (!friendExists) {
-        res.status(404).send()
-        return
+        return res.status(404).send()
     }
 
     let isFriend = await dataPairExists('friends', 'usr', username, 'friend', friendToRemove)
     if (!isFriend) {
-        res.status(400).send('not friend')
-        return
+        return res.status(400).send('not friend')
     }
 
     const removeFriendQuery = `DELETE FROM friends
@@ -251,7 +243,7 @@ app.post('/friends/remove', auth.authToken, async (req, res) => {
     OR usr='${friendToRemove}' AND friend='${username}'`;
     client.query(removeFriendQuery, (err, result) => {
         if (err) throw err
-        res.status(200).send()
+        return res.status(200).send()
     })
 })
 
@@ -260,7 +252,7 @@ app.get('/requests', auth.authToken, (req, res) => {
     const query = `SELECT usr FROM friend_requests WHERE friend='${username}'`
     client.query(query, (err, data) => {
         if (err) throw err;
-        res.status(200).json(data.rows)
+        return res.status(200).json(data.rows)
     })
 })
 
@@ -269,42 +261,37 @@ app.post('/requests/invite', auth.authToken, async (req, res) => {
     const friend_username = req.body.friend
 
     if (username === friend_username) {
-        res.status(400).send('Bad request')
-        return
+        return res.status(400).send('Bad request')
     }
 
     let friendExists = await dataExist('usrs', 'username', friend_username)
 
     if (!friendExists) {
-        res.status(404).send('not found')
-        return
+        return res.status(404).send('not found')
     }
 
     let alreadyFriends = await dataPairExists('friends', 'usr', username, 'friend', friend_username)
 
     if (alreadyFriends) {
-        res.status(400).send('alreadyFriends')
-        return
+        return res.status(400).send('alreadyFriends')
     }
 
     let alreadyRequested = await dataPairExists('friend_requests', 'usr', username, 'friend', friend_username)
     let alreadyBeenInvited = await dataPairExists('friend_requests', 'usr', friend_username, 'friend', username)
 
     if (alreadyRequested) {
-        res.status(400).send('Already requested')
-        return
+        return res.status(400).send('Already requested')
     }
 
     if (alreadyBeenInvited) {
-        res.status(400).send('You have already been invited')
-        return
+        return res.status(400).send('You have already been invited')
     }
 
     const requestQuery = `INSERT INTO friend_requests(usr,friend)
     VALUES ('${username}','${friend_username}')`
     client.query(requestQuery, (err, result) => {
         if (err) throw err;
-        res.status(201).send()
+        return res.status(201).send()
     })
 })
 
@@ -313,22 +300,20 @@ app.post('/requests/cancel', auth.authToken, async (req, res) => {
     const friendToCancel = req.body.friend
 
     if (username === friendToCancel) {
-        res.status(400).send()
-        return
+        return res.status(400).send()
     }
 
     let isInviteSent = await dataPairExists('friend_requests', 'usr', username, 'friend', friendToCancel)
 
     if (!isInviteSent) {
-        res.status(400).send()
-        return
+        return res.status(400).send()
     }
 
     const removeRequestQuery = `DELETE FROM friend_requests
     WHERE usr='${username}' AND friend='${friendToCancel}'`
     client.query(removeRequestQuery, (err, result) => {
         if (err) throw err;
-        res.status(200).send()
+        return res.status(200).send()
     })
 })
 
@@ -337,15 +322,13 @@ app.post('/requests/accept', auth.authToken, async (req, res) => {
     const friendToAccept = req.body.friend
 
     if (username === friendToAccept) {
-        res.status(400).send()
-        return
+        return res.status(400).send()
     }
 
     let isUserInvited = await dataPairExists('friend_requests', 'usr', friendToAccept, 'friend', username)
 
     if (!isUserInvited) {
-        res.status(400).send()
-        return
+        return res.status(400).send()
     }
 
     const addFriendQuery = `INSERT INTO friends (usr,friend)
@@ -358,7 +341,7 @@ app.post('/requests/accept', auth.authToken, async (req, res) => {
     WHERE usr='${friendToAccept}' AND friend='${username}'`
     client.query(removeRequestQuery, (err, result) => {
         if (err) throw err;
-        res.status(200).send()
+        return res.status(200).send()
     })
 })
 
@@ -367,22 +350,20 @@ app.post('/requests/deny', auth.authToken, async (req, res) => {
     const friendToRefuse = req.body.friend
 
     if (username === friendToRefuse) {
-        res.status(400).send()
-        return
+        return res.status(400).send()
     }
 
     let isUserInvited = await dataPairExists('friend_requests', 'usr', friendToRefuse, 'friend', username)
 
     if (!isUserInvited) {
-        res.status(400).send()
-        return
+        return res.status(400).send()
     }
 
     const removeRequestQuery = `DELETE FROM friend_requests
     WHERE usr='${friendToRefuse}' AND friend='${username}'`
     client.query(removeRequestQuery, (err, result) => {
         if (err) throw err;
-        res.status(200).send()
+        return res.status(200).send()
     })
 })
 
@@ -411,7 +392,7 @@ app.post('/register', async (req, res) => {
     const query = `INSERT INTO usrs(username,email,first_name,last_name,password) VALUES('${user.username}','${user.email}','${user.firstName}','${user.lastName}','${user.password}')`
     client.query(query, (err, results) => {
         if (err) throw err;
-        res.status(201).send()
+        return res.status(201).send()
     })
 })
 
