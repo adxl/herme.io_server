@@ -392,12 +392,12 @@ app.post('/register', async (req, res) => {
 
     const usernameExists = await dataExist('usrs', 'username', username)
     if (usernameExists) {
-        return res.status(400).send("This username has already been taken")
+        return res.status(400).send({ error: "This username has already been taken" })
     }
 
     const emailExists = await dataExist('usrs', 'email', email)
     if (emailExists) {
-        return res.status(400).send("This email has already been used")
+        return res.status(400).json({ error: "This email has already been used" })
     }
 
     const user =
