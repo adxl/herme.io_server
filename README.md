@@ -24,7 +24,7 @@ This repository contains the source code for the server side. For the client sid
   + **/requests/deny** > Deny a friend request    
   + **/register** > Sign up    
   + **/login** > Sign in    
-- #### HTTP GET:
+- #### HTTP DELETE:
   + **/posts** > Delete current* user post
 
 **\*** needs an authorization token that will determinate the current user
