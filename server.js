@@ -387,10 +387,23 @@ app.post('/requests/deny', auth.authToken, async (req, res) => {
 })
 
 app.post('/register', async (req, res) => {
+    const username = req.body.username.toLowerCase()
+    const email = req.body.email.toLowerCase()
+
+    const usernameExists = await dataExist('usrs', 'username', username)
+    if (usernameExists) {
+        return res.status(400).send("This username has already been taken")
+    }
+
+    const emailExists = await dataExist('usrs', 'email', email)
+    if (emailExists) {
+        return res.status(400).send("This email has already been used")
+    }
+
     const user =
     {
-        username: req.body.username.toLowerCase(),
-        email: req.body.email.toLowerCase(),
+        username: username,
+        email: emailExists,
         firstName: upperCaseFirst(req.body.firstName),
         lastName: upperCaseFirst(req.body.lastName),
         password: await bcrypt.hash(req.body.password, 10)
