@@ -22,7 +22,7 @@ router.post('/login', async (req, res) => {
                     res.status(200).json({ token: token })
                 }
                 else
-                    res.send("bad credentials")
+                    res.status(400).send("bad credentials")
             } catch (err) {
                 console.log(err);
                 res.status(500).send()
