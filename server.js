@@ -1,5 +1,6 @@
 require('dotenv').config()
-
+const Joi = require('joi');
+const passwordComplexity = require("joi-password-complexity");
 const express = require('express')
 const app = express()
 const client = require('./db.js');
@@ -7,7 +8,16 @@ const auth = require('./auth.js')
 const bcrypt = require('bcrypt')
 const escape = require('pg-escape');
 const cors = require('cors');
-
+const label = "password";
+const complexityOptions = {
+    min: 10,
+    max: 30,
+    lowerCase: 1,
+    upperCase: 1,
+    numeric: 1,
+    symbol: 1,
+    requirementCount: 6,
+};
 app.use(cors())
 app.use(auth.router)
 app.use(express.json())
@@ -370,6 +380,12 @@ app.post('/requests/deny', auth.authToken, async (req, res) => {
 app.post('/register', async (req, res) => {
     const username = req.body.username.toLowerCase()
     const email = req.body.email.toLowerCase()
+    const { error } = CheckPassword(req.body.password);
+
+    if (error) {
+        res.status(400).send(error.details[0].message);
+        return;
+    }
 
     const usernameExists = await dataExist('usrs', 'username', username)
     if (usernameExists) {
@@ -380,6 +396,7 @@ app.post('/register', async (req, res) => {
     if (emailExists) {
         return res.status(400).json({ error: "This email has already been used" })
     }
+
 
     const user =
     {
@@ -392,7 +409,7 @@ app.post('/register', async (req, res) => {
     const query = `INSERT INTO usrs(username,email,first_name,last_name,password) VALUES('${user.username}','${user.email}','${user.firstName}','${user.lastName}','${user.password}')`
     client.query(query, (err, results) => {
         if (err) throw err;
-        return res.status(201).send()
+        return res.status(201).json(user)
     })
 })
 
@@ -424,6 +441,10 @@ async function dataPairExists(table, column_1, value_1, column_2, value_2) {
     })
     exists = await exists
     return exists
+}
+
+function CheckPassword(password) {
+    return passwordComplexity(complexityOptions, label).validate(password);
 }
 
 upperCaseFirst = (str) => {
