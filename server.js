@@ -392,7 +392,7 @@ app.post('/register', async (req, res) => {
     const user =
     {
         username: username,
-        email: emailExists,
+        email: email,
         firstName: upperCaseFirst(req.body.firstName),
         lastName: upperCaseFirst(req.body.lastName),
         password: await bcrypt.hash(req.body.password, 10)
