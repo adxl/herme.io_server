@@ -7,6 +7,8 @@ const auth = require('./auth.js')
 const bcrypt = require('bcrypt')
 const escape = require('pg-escape');
 const cors = require('cors');
+// const Joi = require('joi');
+const passwordComplexity = require("joi-password-complexity");
 
 app.use(cors())
 app.use(auth.router)
@@ -373,12 +375,18 @@ app.post('/register', async (req, res) => {
 
     const usernameExists = await dataExist('usrs', 'username', username)
     if (usernameExists) {
-        return res.status(400).send({ error: "This username has already been taken" })
+        return res.status(400).send("This username has already been taken")
     }
 
     const emailExists = await dataExist('usrs', 'email', email)
     if (emailExists) {
-        return res.status(400).json({ error: "This email has already been used" })
+        return res.status(400).send("This email has already been used")
+    }
+
+    const { error } = CheckPassword(req.body.password);
+    if (error) {
+        res.status(400).send(error.details[0].message);
+        return;
     }
 
     const user =
@@ -424,6 +432,19 @@ async function dataPairExists(table, column_1, value_1, column_2, value_2) {
     })
     exists = await exists
     return exists
+}
+
+function CheckPassword(password) {
+    const label = "Password";
+    const complexityOptions = {
+        min: 10,
+        max: 30,
+        lowerCase: 1,
+        upperCase: 1,
+        numeric: 1,
+        requirementCount: 5,
+    };
+    return passwordComplexity(complexityOptions, label).validate(password);
 }
 
 upperCaseFirst = (str) => {
