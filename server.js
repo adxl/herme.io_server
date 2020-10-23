@@ -442,7 +442,8 @@ function CheckPassword(password) {
         lowerCase: 1,
         upperCase: 1,
         numeric: 1,
-        requirementCount: 5,
+        symbol: 0,
+        requirementCount: 6,
     };
     return passwordComplexity(complexityOptions, label).validate(password);
 }
