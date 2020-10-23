@@ -19,16 +19,15 @@ router.post('/login', async (req, res) => {
             try {
                 if (await bcrypt.compare(password, result.rows[0].password)) {
                     const token = jwt.sign(username, process.env.TOKEN)
-                    res.status(200).json({ token: token })
+                    return res.status(200).send(token)
                 }
                 else
-                    res.status(400).send("bad credentials")
+                    return res.status(400).send("Wrong username or/and password")
             } catch (err) {
-                console.log(err);
-                res.status(500).send()
+                return res.status(500).send("Error while trying to login")
             }
         }
-        res.status(404).send()
+        return res.status(400).send("Wrong username or/and password")
     })
 })
 

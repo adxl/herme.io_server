@@ -375,12 +375,12 @@ app.post('/register', async (req, res) => {
 
     const usernameExists = await dataExist('usrs', 'username', username)
     if (usernameExists) {
-        return res.status(400).send({ error: "This username has already been taken" })
+        return res.status(400).send("This username has already been taken")
     }
 
     const emailExists = await dataExist('usrs', 'email', email)
     if (emailExists) {
-        return res.status(400).json({ error: "This email has already been used" })
+        return res.status(400).send("This email has already been used")
     }
 
     const { error } = CheckPassword(req.body.password);
@@ -398,12 +398,10 @@ app.post('/register', async (req, res) => {
         password: await bcrypt.hash(req.body.password, 10)
     }
     const query = `INSERT INTO usrs(username,email,first_name,last_name,password) VALUES('${user.username}','${user.email}','${user.firstName}','${user.lastName}','${user.password}')`
-    // client.query(query, (err, results) => {
-    //     if (err) throw err;
-    //     return res.status(201).send()
-    // })
-
-    return
+    client.query(query, (err, results) => {
+        if (err) throw err;
+        return res.status(201).send()
+    })
 })
 
 async function dataExist(table, column, value) {
